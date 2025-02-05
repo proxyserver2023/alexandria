@@ -12,6 +12,10 @@ inputs:
     description: "GitHub token used to interact with GitHub API"
     required: false
     default: ${{ github.token }}
+  log_level:
+    description: "Log level for Terraform"
+    required: false
+    default: "INFO"
 
 runs:
   using: "composite"
@@ -24,18 +28,6 @@ runs:
         aws-region: "us-east-1"
         output-credentials: true
       id: creds
-
-    - name: Verify Authentication
-      shell: bash
-      run: aws sts get-caller-identity
-
-    - name: Deploy to S3 (Example)
-      shell: bash
-      run: aws s3 ls
-
-    - name: Allow Debug logging
-      shell: bash
-      run: export TF_LOG=DEBUG
 
     - name: get-tf-env-vars
       shell: bash
@@ -64,6 +56,7 @@ runs:
           -e GITHUB_OWNER=proxyserver2023
           -e DD_API_KEY=${{ env.DD_API_KEY }}
           -e DD_APP_KEY=${{ env.DD_APP_KEY }}
+          -e TF_LOG=${{ inputs.log_level }}
           -v ${{ github.workspace }}:/work
         image: hashicorp/terraform
         run: |
