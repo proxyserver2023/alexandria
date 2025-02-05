@@ -1,12 +1,12 @@
 resource "aws_s3_bucket" "terraform_s3_state" {
-  bucket = "proxyserver2023-sandbox-terraform-state-${var.stage}"
+  bucket = "the-proxyserver2023-sandbox-terraform-state-${var.stage}"
 
   lifecycle {
     prevent_destroy = true
   }
 
   tags = {
-    Name = "proxyserver2023-sandbox-terraform-state-${var.stage}"
+    Name = "the-proxyserver2023-sandbox-terraform-state-${var.stage}"
   }
 }
 
@@ -22,6 +22,7 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "LockID"
+  billing_mode   = "PAY_PER_REQUEST"
 
   attribute {
     name = "LockID"
