@@ -70,6 +70,7 @@ runs:
           source /work/env_file
           cd /work/${{ inputs.terraform_path }}
           git config --global url."https://proxyserver2023:${GITHUB_TOKEN}@github.com/proxyserver2023".insteadOf "https://github.com/proxyserver2023"
+
           terraform init -backend-config=backend-${{ inputs.stage }}.tfvars
           terraform fmt -check
           terraform plan -var "stage=${{ inputs.stage }}" -out tfplan
