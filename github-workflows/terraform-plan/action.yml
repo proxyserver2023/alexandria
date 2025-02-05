@@ -1,0 +1,43 @@
+name: TerraformPlan
+
+inputs:
+  stage:
+    required: true
+    type: string
+  terraform_path:
+    required: true
+    default: "terraform/"
+    type: string
+  github-token:
+    description: "GitHub token used to interact with GitHub API"
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::313750358190:role/terraform-service-deployment-iam-role-${{ inputs.stage == 'master' && 'dev' || inputs.stage }}
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+        aws-region: "us-east-1"
+        output-credentials: true
+      id: creds
+    - name: get-tf-env-vars
+      shell: bash
+      run: |
+        #!/bin/bash
+
+        # Create a new file
+        echo "" > ${{ github.workspace }}/env_file
+
+        # Loop over all environment variables
+        for var in $(compgen -v); do
+          # If the variable starts with TF_VAR_
+          echo $var
+          if [[ $var == TF_VAR_* ]]; then
+            # Write the variable and its value to the file
+            echo "export $var=${!var}" >> ${{ github.workspace }}/env_file
+          fi
+        done
