@@ -1,8 +1,5 @@
 resource "aws_iam_role" "terraform_service_deployment_iam_role" {
   name = "terraform-service-deployment-iam-role-${var.stage}"
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AdministratorAccess"
-  ]
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -28,4 +25,9 @@ resource "aws_iam_role" "terraform_service_deployment_iam_role" {
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "terraform_service_deployment_iam_role_attachment" {
+  role       = aws_iam_role.terraform_service_deployment_iam_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
