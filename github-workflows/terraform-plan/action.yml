@@ -48,7 +48,6 @@ runs:
         # Loop over all environment variables
         for var in $(compgen -v); do
           # If the variable starts with TF_VAR_
-          echo $var
           if [[ $var == TF_VAR_* ]]; then
             # Write the variable and its value to the file
             echo "export $var=${!var}" >> ${{ github.workspace }}/env_file
