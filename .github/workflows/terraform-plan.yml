@@ -17,4 +17,4 @@ jobs:
         uses: proxyserver2023/alexandria/github-workflows/terraform-plan@FEAT-1
         with:
           stage: ${{ github.event.pull_request.base.ref }}
-          terraform_path: terraform/src/
+          terraform_path: terraform/
