@@ -24,6 +24,7 @@ runs:
         aws-region: "us-east-1"
         output-credentials: true
       id: creds
+
     - name: Verify Authentication
       shell: bash
       run: aws sts get-caller-identity
@@ -31,6 +32,11 @@ runs:
     - name: Deploy to S3 (Example)
       shell: bash
       run: aws s3 ls
+
+    - name: Allow Debug logging
+      shell: bash
+      run: export TF_LOG=DEBUG
+
     - name: get-tf-env-vars
       shell: bash
       run: |
@@ -48,3 +54,23 @@ runs:
             echo "export $var=${!var}" >> ${{ github.workspace }}/env_file
           fi
         done
+    - name: terraform-plan
+      uses: addnab/docker-run-action@v3
+      with:
+        options:
+          -e AWS_ACCESS_KEY_ID=${{ steps.creds.outputs.aws-access-key-id }}
+          -e AWS_SECRET_ACCESS_KEY=${{ steps.creds.outputs.aws-secret-access-key }}
+          -e AWS_SESSION_TOKEN=${{ steps.creds.outputs.aws-session-token }}
+          -e GITHUB_TOKEN=${{ inputs.github-token }}
+          -e GITHUB_OWNER=proxyserver2023
+          -e DD_API_KEY=${{ env.DD_API_KEY }}
+          -e DD_APP_KEY=${{ env.DD_APP_KEY }}
+          -v ${{ github.workspace }}:/work
+        image: hashicorp/terraform
+        run: |
+          source /work/env_file
+          cd /work/${{ inputs.terraform_path }}
+          git config --global url."https://proxyserver2023:${GITHUB_TOKEN}@github.com/proxyserver2023".insteadOf "https://github.com/proxyserver2023"
+          terraform init -backend-config=backend-${{ inputs.stage }}.tfvars
+          terraform fmt -check
+          terraform plan -var "stage=${{ inputs.stage }}" -out tfplan
