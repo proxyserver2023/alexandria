@@ -24,6 +24,13 @@ runs:
         aws-region: "us-east-1"
         output-credentials: true
       id: creds
+    - name: Verify Authentication
+      shell: bash
+      run: aws sts get-caller-identity
+
+    - name: Deploy to S3 (Example)
+      shell: bash
+      run: aws s3 ls
     - name: get-tf-env-vars
       shell: bash
       run: |
