@@ -19,7 +19,7 @@ runs:
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::313750358190:role/terraform-service-deployment-iam-role-${{ inputs.stage == 'master' && 'dev' || inputs.stage }}
+        role-to-assume: arn:aws:iam::625377802426:role/terraform-service-deployment-iam-role-${{ inputs.stage }}
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
         aws-region: "us-east-1"
         output-credentials: true
