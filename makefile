@@ -5,7 +5,7 @@ STAGES := dev prod
 
 
 # Define common variables
-TF_DIR := terraform/src
+TF_DIR := terraform/
 TF_REMOTE_STATE_DIR := terraform/remote-state
 
 # The first launch of the service
