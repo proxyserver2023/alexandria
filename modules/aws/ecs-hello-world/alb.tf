@@ -13,10 +13,11 @@ resource "aws_lb" "this" {
 
 # Create a Target Group for the ECS Service
 resource "aws_lb_target_group" "this" {
-  name     = "${var.project_name}-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.this.id
+  name        = "${var.project_name}-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.this.id
+  target_type = "ip"
 
   health_check {
     path                = "/"
