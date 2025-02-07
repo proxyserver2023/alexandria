@@ -1,26 +1,27 @@
-name: TerraformPlan
+name: TerraformApply
 
-description: "Plan Terraform configuration"
+description: "Apply Terraform configuration"
 
 inputs:
   stage:
     required: true
+    default: "dev"
     description: "The stage to deploy the Terraform resources"
   terraform_path:
     required: true
     default: "terraform/"
     description: "The path to the Terraform configuration files"
   github-token:
-    description: "GitHub token used to interact with GitHub API"
+    description: "The GitHub token used to interact with GitHub API"
     required: false
     default: ${{ github.token }}
   log_level:
-    description: "Log level for Terraform"
+    description: "The log level for Terraform"
     required: false
     default: "INFO"
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -30,15 +31,11 @@ runs:
         aws-region: "us-east-1"
         output-credentials: true
       id: creds
-
     - name: get-tf-env-vars
       shell: bash
       run: |
-        #!/bin/bash
-
         # Create a new file
         echo "" > ${{ github.workspace }}/env_file
-
         # Loop over all environment variables
         for var in $(compgen -v); do
           # If the variable starts with TF_VAR_
@@ -47,7 +44,7 @@ runs:
             echo "export $var=${!var}" >> ${{ github.workspace }}/env_file
           fi
         done
-    - name: terraform-plan
+    - name: terraform-apply
       uses: addnab/docker-run-action@v3
       with:
         options:
@@ -60,6 +57,8 @@ runs:
           -e DD_APP_KEY=${{ env.DD_APP_KEY }}
           -e TF_LOG=${{ inputs.log_level }}
           -v ${{ github.workspace }}:/work
+          -v ${{ github.workspace }}/env_file:/env_file
+          -w /work
         image: hashicorp/terraform
         run: |
           source /work/env_file
@@ -69,3 +68,4 @@ runs:
           terraform init -backend-config=backend-${{ inputs.stage }}.tfvars
           terraform fmt -check
           terraform plan -var "stage=${{ inputs.stage }}" -out tfplan
+          terraform apply -var "stage=${{ inputs.stage }}" -auto-approve
