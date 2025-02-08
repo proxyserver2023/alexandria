@@ -1,11 +1,13 @@
 variable "name" {
   description = "Name prefix for the VPC"
   type        = string
+  default     = "my-vpc"
 }
 
 variable "cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
+  default     = "10.0.0.0/16"
 }
 
 variable "public_subnet_count" {
@@ -23,4 +25,5 @@ variable "public_subnet_bits" {
 variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
+  default     = ["us-east-1a", "us-east-1b"] # TODO: Fetch AZ from provider using datablock
 }
