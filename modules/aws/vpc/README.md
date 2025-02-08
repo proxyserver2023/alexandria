@@ -33,7 +33,7 @@ AWS Provider version >= <VERSION_NUMBER>
 
     ```terraform
         module "module-name" {
-            source = "git::https://${var.token}@github.com/proxyserver2023/Terraform-Library.git//modules/bc-module-name"
+            source = "git::https://${var.token}@github.com/proxyserver2023/alexandria.git//modules/module-name?ref=v1.0.0"
 
             input-name-1 = ""
 
