@@ -62,3 +62,39 @@ module "ec2_asg" {
   spot_max         = 10
   spot_desired     = 2
 }
+
+
+###############################
+# ECS Capacity Providers
+###############################
+module "capacity_providers" {
+  source           = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/capacity-providers?ref=dev"
+  ondemand_asg_arn = module.ec2_asg.ondemand_asg_arn
+  spot_asg_arn     = module.ec2_asg.spot_asg_arn
+}
+
+
+###############################
+# ECS Task Definitions
+###############################
+module "ecs_task_ec2" {
+  source             = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-task-definition?ref=dev"
+  family             = "ecommerce-task-ec2"
+  cpu                = "128"
+  memory             = "128"
+  execution_role_arn = var.ecs_execution_role_arn
+  task_role_arn      = var.ecs_task_role_arn
+  image              = "nginxdemos/hello"
+  container_port     = 80
+}
+
+module "ecs_task_fargate" {
+  source             = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/fargate-task-definition?ref=dev"
+  family             = "ecommerce-task-fargate"
+  cpu                = "128"
+  memory             = "128"
+  execution_role_arn = var.ecs_execution_role_arn
+  task_role_arn      = var.ecs_task_role_arn
+  image              = "nginxdemos/hello"
+  container_port     = 80
+}
