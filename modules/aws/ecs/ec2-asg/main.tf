@@ -55,16 +55,16 @@ resource "aws_autoscaling_group" "asg" {
       }
       # Overrides let you specify alternative instance types and their weighted capacities.
       override {
-        instance_type     = "m8g.large"
-        weighted_capacity = "2" # Each m8g.large counts as 2 capacity unit, because this is double the size of m8g.medium
-      }
-      override {
-        instance_type     = "t4g.medium"
+        instance_type     = "c7a.large"
         weighted_capacity = "1"
       }
       override {
-        instance_type     = "m5.large"
+        instance_type     = "r7a.large"
         weighted_capacity = "2"
+      }
+      override {
+        instance_type     = "m7a.xlarge"
+        weighted_capacity = "2" # Each m7a.xlarge instance counts as 2 units of capacity
       }
     }
   }
