@@ -12,7 +12,7 @@ resource "aws_launch_template" "ecs_lt" {
   name_prefix   = "${var.name}-lt-"
   image_id      = data.aws_ami.ecs_optimized.id
   instance_type = var.instance_type
-  key_name      = var.key_name
+  key_name      = aws_key_pair.ec2_key.key_name
 
   network_interfaces {
     associate_public_ip_address = true

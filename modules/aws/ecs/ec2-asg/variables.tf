@@ -41,3 +41,15 @@ variable "desired" {
   type    = number
   default = 2
 }
+
+variable "key_name" {
+  description = "The name of the EC2 key pair."
+  type        = string
+  default     = "my-ec2-key"
+}
+
+variable "public_key_path" {
+  description = "The local file path to your public SSH key."
+  type        = string
+  default     = "~/.ssh/id_rsa.pub"
+}
