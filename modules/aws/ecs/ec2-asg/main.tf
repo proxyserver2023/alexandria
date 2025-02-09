@@ -4,7 +4,7 @@ data "aws_ami" "ecs_optimized" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+    values = ["al2023-ami-ecs-hvm-*-x86_64-ebs"]
   }
 }
 
@@ -31,36 +31,12 @@ resource "aws_launch_template" "ecs_lt" {
 }
 
 
-resource "aws_autoscaling_group" "ondemand_asg" {
-  name_prefix = "${var.name}-od-asg-"
-  launch_template {
-    id      = aws_launch_template.ecs_lt.id
-    version = "$Latest"
-  }
-  min_size                  = var.ondemand_min_size
-  desired_capacity          = var.ondemand_desired_capacity
-  max_size                  = var.ondemand_max_size
-  vpc_zone_identifier       = var.public_subnets
-  health_check_type         = "EC2"
-  health_check_grace_period = 300
+resource "aws_autoscaling_group" "asg" {
+  name = "${var.name}-asg"
 
-  tag {
-    key                 = "Name"
-    value               = "${var.name}-od-asg"
-    propagate_at_launch = true
-  }
-
-}
-
-resource "aws_autoscaling_group" "spot_asg" {
-  name_prefix = "${var.name}-spot-asg-"
-  launch_template {
-    id      = aws_launch_template.ecs_lt.id
-    version = "$Latest"
-  }
-  min_size                  = var.spot_min
-  max_size                  = var.spot_max
-  desired_capacity          = var.spot_desired
+  min_size                  = var.min
+  max_size                  = var.max
+  desired_capacity          = var.desired
   vpc_zone_identifier       = var.public_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
@@ -77,13 +53,25 @@ resource "aws_autoscaling_group" "spot_asg" {
         launch_template_id = aws_launch_template.ecs_lt.id
         version            = "$Latest"
       }
-      overrides = []
+      # Overrides let you specify alternative instance types and their weighted capacities.
+      override {
+        instance_type     = "m8g.large"
+        weighted_capacity = "2" # Each m8g.large counts as 2 capacity unit, because this is double the size of m8g.medium
+      }
+      override {
+        instance_type     = "t4g.medium"
+        weighted_capacity = "1"
+      }
+      override {
+        instance_type     = "m5.large"
+        weighted_capacity = "2"
+      }
     }
   }
 
   tag {
     key                 = "Name"
-    value               = "${var.name}-spot"
+    value               = "${var.name}-asg"
     propagate_at_launch = true
   }
 }
