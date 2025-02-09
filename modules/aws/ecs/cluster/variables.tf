@@ -1,4 +1,4 @@
 variable "name" {
-  description = "Name of the ECS Cluster"
+  description = "Name of the Project"
   type        = string
 }
