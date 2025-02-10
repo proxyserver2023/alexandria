@@ -17,7 +17,7 @@ resource "aws_iam_role" "ecs_task_role" {
 
 
 resource "aws_iam_role_policy_attachment" "ecs_runner_ecr_poweruser" {
-  role       = aws_iam_role.ecs_runner.name
+  role       = aws_iam_role.ecs_task_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
 
