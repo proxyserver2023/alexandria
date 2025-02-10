@@ -21,7 +21,7 @@ resource "aws_ecs_service" "fargate_service" {
   network_configuration {
     subnets          = var.subnets
     security_groups  = var.security_groups
-    assign_public_ip = "ENABLED"
+    assign_public_ip = "DISABLED"
   }
 
   load_balancer {
