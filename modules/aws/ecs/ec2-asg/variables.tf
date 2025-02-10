@@ -19,8 +19,8 @@ variable "ecs_cluster_name" {
   type        = string
 }
 
-variable "public_subnets" {
-  description = "List of public subnet IDs"
+variable "private_subnets" {
+  description = "List of private subnet IDs"
   type        = list(string)
 }
 
@@ -29,15 +29,30 @@ variable "ecs_sg_id" {
   type        = string
 }
 
-variable "min" {
+variable "ondemand_min" {
   type    = number
   default = 1
 }
-variable "max" {
+
+variable "ondemand_max" {
+  type    = number
+  default = 1
+}
+
+variable "ondemand_desired" {
+  type    = number
+  default = 1
+}
+
+variable "spot_min" {
+  type    = number
+  default = 1
+}
+variable "spot_max" {
   type    = number
   default = 3
 }
-variable "desired" {
+variable "spot_desired" {
   type    = number
   default = 2
 }

@@ -30,14 +30,39 @@ resource "aws_launch_template" "ecs_lt" {
   }
 }
 
+resource "aws_autoscaling_group" "ondemand_asg" {
+  name = "${var.name}-od"
+  launch_template {
+    id      = aws_launch_template.ecs_lt.id
+    version = "$Latest"
+  }
+  min_size                  = var.ondemand_min
+  max_size                  = var.ondemand_max
+  desired_capacity          = var.ondemand_desired
+  vpc_zone_identifier       = var.private_subnets
+  health_check_type         = "EC2"
+  health_check_grace_period = 300
 
-resource "aws_autoscaling_group" "asg" {
-  name = "${var.name}-asg"
+  tag {
+    key                 = "Name"
+    value               = "${var.name}-od"
+    propagate_at_launch = false
+  }
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
+    propagate_at_launch = true
+  }
+}
 
-  min_size                  = var.min
-  max_size                  = var.max
-  desired_capacity          = var.desired
-  vpc_zone_identifier       = var.public_subnets
+
+resource "aws_autoscaling_group" "spot_asg" {
+  name = "${var.name}-spot"
+
+  min_size                  = var.spot_min
+  max_size                  = var.spot_max
+  desired_capacity          = var.spot_desired
+  vpc_zone_identifier       = var.private_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
 
@@ -71,7 +96,12 @@ resource "aws_autoscaling_group" "asg" {
 
   tag {
     key                 = "Name"
-    value               = "${var.name}-asg"
+    value               = "${var.name}-spot"
+    propagate_at_launch = false
+  }
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
     propagate_at_launch = true
   }
 }
