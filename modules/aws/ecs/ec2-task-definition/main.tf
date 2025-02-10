@@ -14,6 +14,9 @@ resource "aws_ecs_task_definition" "ec2_task" {
       essential = true
       portMappings = [
         {
+          # Dynamic Host Port Mapping:
+          # For the EC2 service, the task definition uses "hostPort": 0 in bridge mode,
+          # and the ECS agent automatically registers the actual host port in the target group.
           containerPort = var.container_port,
           hostPort      = 0,
           protocol      = "tcp"
