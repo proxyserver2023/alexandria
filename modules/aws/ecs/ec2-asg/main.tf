@@ -39,7 +39,7 @@ resource "aws_autoscaling_group" "ondemand_asg" {
   min_size                  = var.ondemand_min
   max_size                  = var.ondemand_max
   desired_capacity          = var.ondemand_desired
-  vpc_zone_identifier       = var.public_subnets
+  vpc_zone_identifier       = var.private_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
 
@@ -62,7 +62,7 @@ resource "aws_autoscaling_group" "spot_asg" {
   min_size                  = var.spot_min
   max_size                  = var.spot_max
   desired_capacity          = var.spot_desired
-  vpc_zone_identifier       = var.public_subnets
+  vpc_zone_identifier       = var.private_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
 
