@@ -6,7 +6,7 @@ resource "aws_ecs_capacity_provider" "ondemand_provider" {
     managed_termination_protection = "DISABLED"
     managed_scaling {
       status                    = "ENABLED"
-      target_capacity           = 75
+      target_capacity           = 10
       minimum_scaling_step_size = 1
       maximum_scaling_step_size = 1000
     }
@@ -21,7 +21,7 @@ resource "aws_ecs_capacity_provider" "spot_provider" {
     managed_termination_protection = "DISABLED"
     managed_scaling {
       status                    = "ENABLED"
-      target_capacity           = 75
+      target_capacity           = 90
       minimum_scaling_step_size = 1
       maximum_scaling_step_size = 1000
     }

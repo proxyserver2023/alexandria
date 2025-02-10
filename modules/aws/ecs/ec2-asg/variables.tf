@@ -29,15 +29,30 @@ variable "ecs_sg_id" {
   type        = string
 }
 
-variable "min" {
+variable "ondemand_min" {
   type    = number
   default = 1
 }
-variable "max" {
+
+variable "ondemand_max" {
+  type    = number
+  default = 1
+}
+
+variable "ondemand_desired" {
+  type    = number
+  default = 1
+}
+
+variable "spot_min" {
+  type    = number
+  default = 1
+}
+variable "spot_max" {
   type    = number
   default = 3
 }
-variable "desired" {
+variable "spot_desired" {
   type    = number
   default = 2
 }
