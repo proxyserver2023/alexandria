@@ -37,10 +37,3 @@ variable "container_name" {
 variable "container_port" {
   type = number
 }
-
-variable "fargate_spot_weight" {
-  type = number
-}
-variable "fargate_on_demand_weight" {
-  type = number
-}
