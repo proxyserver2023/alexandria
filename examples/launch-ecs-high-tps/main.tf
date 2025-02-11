@@ -2,22 +2,21 @@
 ##############################
 # VPC and Networking
 ###############################
+
 module "vpc" {
-  source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/vpc?ref=dev"
+  source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/vpc?ref=dev"
   # Module variables
-  name                = "my-vpc"
-  cidr_block          = "10.0.0.0/16"
-  public_subnet_count = 2
-  public_subnet_bits  = 8
-  availability_zones  = ["us-east-1a", "us-east-1b"]
+  name        = var.name
+  cidr_block  = "10.0.0.0/16"
+  subnet_bits = 8
 }
 
 ###############################
 # Security Groups
 ###############################
 module "security_groups" {
-  source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/security-group?ref=dev"
-  name   = "ecommerce"
+  source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/security-group?ref=dev"
+  name   = var.name
   vpc_id = module.vpc.vpc_id
 }
 
@@ -26,8 +25,8 @@ module "security_groups" {
 # Application Load Balancer
 ###############################
 module "alb" {
-  source         = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/alb?ref=dev"
-  name           = "ecommerce"
+  source         = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/alb?ref=dev"
+  name           = var.name
   vpc_id         = module.vpc.vpc_id
   public_subnets = module.vpc.public_subnets
   alb_sg_id      = module.security_groups.alb_sg_id
@@ -40,7 +39,7 @@ module "alb" {
 ###############################
 module "ecs_cluster" {
   source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/cluster?ref=dev"
-  name   = "ecommerce-cluster"
+  name   = var.name
 }
 
 
@@ -48,18 +47,18 @@ module "ecs_cluster" {
 # EC2 Auto Scaling Groups for ECS Tasks
 ###############################
 module "ec2_asg" {
-  source           = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ec2-asg?ref=dev"
-  name             = "ecommerce-ec2"
-  instance_type    = "m8g.large"
-  key_name         = var.key_name
+  source           = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-asg?ref=dev"
+  name             = var.name
+  instance_type    = "m5.large"
+  key_name         = var.name
   ecs_cluster_name = module.ecs_cluster.ecs_cluster_id
-  public_subnets   = module.vpc.public_subnets
+  private_subnets  = module.vpc.private_subnets
   ecs_sg_id        = module.security_groups.ecs_sg_id
-  ondemand_min     = 0
-  ondemand_max     = 1
+  ondemand_min     = 1
+  ondemand_max     = 4
   ondemand_desired = 1
-  spot_min         = 2
-  spot_max         = 10
+  spot_min         = 1
+  spot_max         = 4
   spot_desired     = 2
 }
 
@@ -75,26 +74,68 @@ module "capacity_providers" {
 
 
 ###############################
+# ECS Task Execution IAM Role
+###############################
+module "iam" {
+  source = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/iam?ref=dev"
+  name   = var.name
+}
+
+###############################
 # ECS Task Definitions
 ###############################
 module "ecs_task_ec2" {
   source             = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-task-definition?ref=dev"
-  family             = "ecommerce-task-ec2"
+  family             = "${var.name}-ec2"
   cpu                = "128"
   memory             = "128"
-  execution_role_arn = var.ecs_execution_role_arn
-  task_role_arn      = var.ecs_task_role_arn
+  execution_role_arn = module.iam.ecs_execution_role_arn
+  task_role_arn      = module.iam.ecs_task_role_arn
   image              = "nginxdemos/hello"
   container_port     = 80
 }
 
 module "ecs_task_fargate" {
   source             = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/fargate-task-definition?ref=dev"
-  family             = "ecommerce-task-fargate"
-  cpu                = "128"
-  memory             = "128"
-  execution_role_arn = var.ecs_execution_role_arn
-  task_role_arn      = var.ecs_task_role_arn
+  family             = "${var.name}-fargate"
+  cpu                = "256"
+  memory             = "512"
+  execution_role_arn = module.iam.ecs_execution_role_arn
+  task_role_arn      = module.iam.ecs_task_role_arn
   image              = "nginxdemos/hello"
   container_port     = 80
+}
+
+
+###############################
+# ECS Services
+###############################
+module "ecs_service_ec2" {
+  source              = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-service?ref=6b46dd9"
+  name                = "${var.name}-service-ec2"
+  cluster_id          = module.ecs_cluster.ecs_cluster_id
+  task_definition_arn = module.ecs_task_ec2.ecs_task_definition_arn
+  spot_cp_name        = module.capacity_providers.spot_cp_name
+  ondemand_cp_name    = module.capacity_providers.ondemand_cp_name
+  spot_weight         = 90
+  ondemand_weight     = 10
+  desired_count       = 10
+  target_group_arn    = module.alb.ec2_target_group_arn
+  container_name      = "web"
+  container_port      = 80
+}
+
+module "ecs_service_fargate" {
+  source                   = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/fargate-service?ref=7560a8b"
+  name                     = "${var.name}-service-fargate"
+  cluster_id               = module.ecs_cluster.ecs_cluster_id
+  task_definition_arn      = module.ecs_task_fargate.ecs_task_definition_arn
+  fargate_spot_weight      = 90
+  fargate_on_demand_weight = 10
+  desired_count            = 10
+  subnets                  = module.vpc.private_subnets
+  security_groups          = [module.security_groups.ecs_sg_id]
+  target_group_arn         = module.alb.fargate_target_group_arn
+  container_name           = "web"
+  container_port           = 80
 }
