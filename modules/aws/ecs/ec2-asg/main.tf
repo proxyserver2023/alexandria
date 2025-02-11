@@ -15,13 +15,13 @@ resource "aws_launch_template" "ecs_lt" {
   key_name      = aws_key_pair.ec2_key.key_name
 
   network_interfaces {
-    associate_public_ip_address = false
+    associate_public_ip_address = true
     security_groups             = [var.ecs_sg_id]
   }
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
-    echo ECS_CLUSTER=${var.ecs_cluster_id} >> /etc/ecs/ecs.config
+    echo ECS_CLUSTER=${var.ecs_cluster_name} >> /etc/ecs/ecs.config
   EOF
   )
 
