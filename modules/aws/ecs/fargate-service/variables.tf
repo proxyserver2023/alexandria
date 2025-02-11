@@ -7,18 +7,6 @@ variable "cluster_id" {
 variable "task_definition_arn" {
   type = string
 }
-variable "spot_cp_name" {
-  type = string
-}
-variable "ondemand_cp_name" {
-  type = string
-}
-variable "spot_weight" {
-  type = number
-}
-variable "ondemand_weight" {
-  type = number
-}
 variable "desired_count" {
   type = number
 }
