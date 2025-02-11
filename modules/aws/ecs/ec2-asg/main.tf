@@ -21,7 +21,7 @@ resource "aws_launch_template" "ecs_lt" {
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
-    echo ECS_CLUSTER=${var.ecs_cluster_name} >> /etc/ecs/ecs.config
+    echo ECS_CLUSTER=${var.ecs_cluster_id} >> /etc/ecs/ecs.config
   EOF
   )
 
