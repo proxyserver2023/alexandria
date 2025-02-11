@@ -19,7 +19,7 @@ resource "aws_launch_template" "ecs_lt" {
   }
 
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = var.is_public
     security_groups             = [var.ecs_sg_id]
   }
 
@@ -43,7 +43,7 @@ resource "aws_autoscaling_group" "ondemand_asg" {
   min_size                  = var.ondemand_min
   max_size                  = var.ondemand_max
   desired_capacity          = var.ondemand_desired
-  vpc_zone_identifier       = var.private_subnets
+  vpc_zone_identifier       = var.subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
 
@@ -66,7 +66,7 @@ resource "aws_autoscaling_group" "spot_asg" {
   min_size                  = var.spot_min
   max_size                  = var.spot_max
   desired_capacity          = var.spot_desired
-  vpc_zone_identifier       = var.private_subnets
+  vpc_zone_identifier       = var.subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
 

@@ -19,9 +19,15 @@ variable "ecs_cluster_name" {
   type        = string
 }
 
-variable "private_subnets" {
-  description = "List of private subnet IDs"
+variable "subnets" {
+  description = "List of subnet IDs"
   type        = list(string)
+}
+
+variable "is_public" {
+  description = "Flag to determine if the instance should have a public IP"
+  type        = bool
+  default     = false
 }
 
 variable "ecs_sg_id" {

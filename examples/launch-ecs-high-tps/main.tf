@@ -57,7 +57,8 @@ module "ec2_asg" {
   instance_type    = "m7a.xlarge"
   key_name         = var.name
   ecs_cluster_name = module.ecs_cluster.ecs_cluster_name
-  private_subnets  = module.vpc.public_subnets
+  subnets          = module.vpc.public_subnets
+  is_public        = true
   ecs_sg_id        = module.security_groups.ecs_sg_id
   instance_profile = module.iam.ecs_instance_profile_name
   ondemand_min     = 0
