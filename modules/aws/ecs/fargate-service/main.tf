@@ -2,7 +2,6 @@ resource "aws_ecs_service" "fargate_service" {
   name            = var.name
   cluster         = var.cluster_id
   task_definition = var.task_definition_arn
-  launch_type     = "FARGATE"
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"

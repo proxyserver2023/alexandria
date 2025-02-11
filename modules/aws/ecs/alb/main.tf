@@ -31,10 +31,11 @@ resource "aws_lb_target_group" "ec2_tg" {
 
 
 resource "aws_lb_target_group" "fargate_tg" {
-  name     = "${var.name}-fargate-tg"
-  port     = var.target_port
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  name        = "${var.name}-fargate-tg"
+  port        = var.target_port
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
 
   health_check {
     path                = "/"
