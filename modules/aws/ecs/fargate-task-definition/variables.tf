@@ -19,3 +19,11 @@ variable "image" {
 variable "container_port" {
   type = number
 }
+
+variable "region" {
+  type = string
+}
+
+variable "log_group_name" {
+  type = string
+}

@@ -62,3 +62,8 @@ variable "public_key_path" {
   type        = string
   default     = "~/.ssh/id_rsa.pub"
 }
+
+variable "instance_profile" {
+  description = "Name of the ECS instance profile"
+  type        = string
+}

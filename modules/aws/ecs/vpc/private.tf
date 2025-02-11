@@ -13,6 +13,7 @@ resource "aws_subnet" "private" {
   }
 }
 
+
 # # Create Elastic IPs for NAT Gateways (one per public subnet)
 # resource "aws_eip" "nat" {
 #   count = length(data.aws_availability_zones.available.names)
