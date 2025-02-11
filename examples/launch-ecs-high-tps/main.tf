@@ -49,17 +49,17 @@ module "ecs_cluster" {
 module "ec2_asg" {
   source           = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-asg?ref=dev"
   name             = var.name
-  instance_type    = "m5.large"
+  instance_type    = "m7a.xlarge"
   key_name         = var.name
   ecs_cluster_name = module.ecs_cluster.ecs_cluster_id
   private_subnets  = module.vpc.private_subnets
   ecs_sg_id        = module.security_groups.ecs_sg_id
-  ondemand_min     = 1
+  ondemand_min     = 0
   ondemand_max     = 4
   ondemand_desired = 1
-  spot_min         = 1
+  spot_min         = 0
   spot_max         = 4
-  spot_desired     = 2
+  spot_desired     = 1
 }
 
 
@@ -87,8 +87,8 @@ module "iam" {
 module "ecs_task_ec2" {
   source             = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-task-definition?ref=dev"
   family             = "${var.name}-ec2"
-  cpu                = "128"
-  memory             = "128"
+  cpu                = "256"
+  memory             = "512"
   execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn      = module.iam.ecs_task_role_arn
   image              = "nginxdemos/hello"
@@ -111,7 +111,7 @@ module "ecs_task_fargate" {
 # ECS Services
 ###############################
 module "ecs_service_ec2" {
-  source              = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-service?ref=6b46dd9"
+  source              = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/ec2-service?ref=dev"
   name                = "${var.name}-service-ec2"
   cluster_id          = module.ecs_cluster.ecs_cluster_id
   task_definition_arn = module.ecs_task_ec2.ecs_task_definition_arn
@@ -126,7 +126,7 @@ module "ecs_service_ec2" {
 }
 
 module "ecs_service_fargate" {
-  source                   = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/fargate-service?ref=7560a8b"
+  source                   = "git::https://github.com/proxyserver2023/alexandria.git//modules/aws/ecs/fargate-service?ref=dev"
   name                     = "${var.name}-service-fargate"
   cluster_id               = module.ecs_cluster.ecs_cluster_id
   task_definition_arn      = module.ecs_task_fargate.ecs_task_definition_arn

@@ -15,7 +15,7 @@ resource "aws_launch_template" "ecs_lt" {
   key_name      = aws_key_pair.ec2_key.key_name
 
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     security_groups             = [var.ecs_sg_id]
   }
 
