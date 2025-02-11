@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "fargate_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.ecs_log_group.name
+          "awslogs-group"         = var.log_group_name
           "awslogs-region"        = var.region
           "awslogs-stream-prefix" = "ecs"
         }

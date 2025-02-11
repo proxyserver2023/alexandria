@@ -24,6 +24,6 @@ variable "region" {
   type = string
 }
 
-variable "name" {
+variable "log_group_name" {
   type = string
 }
