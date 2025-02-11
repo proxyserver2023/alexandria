@@ -27,3 +27,13 @@ resource "aws_ecs_capacity_provider" "spot_provider" {
     }
   }
 }
+
+resource "aws_ecs_cluster_capacity_providers" "cluster_providers" {
+  cluster_name = var.cluster_name
+  capacity_providers = [
+    aws_ecs_capacity_provider.ondemand_provider.name,
+    aws_ecs_capacity_provider.spot_provider.name,
+    "FARGATE",
+    "FARGATE_SPOT"
+  ]
+}
