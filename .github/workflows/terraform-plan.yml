@@ -2,7 +2,7 @@ name: TerraformPlan
 
 on:
   pull_request:
-    branches: [prod, dev]
+    branches: [dev]
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: terraform-plan
-        uses: proxyserver2023/alexandria/github-workflows/terraform-plan@FEAT-1
+        uses: proxyserver2023/alexandria/github-workflows/terraform-plan@dev
         with:
           stage: ${{ github.event.pull_request.base.ref }}
           terraform_path: terraform/

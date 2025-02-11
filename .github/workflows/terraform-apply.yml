@@ -2,7 +2,7 @@ name: TerraformApply
 
 on:
   push:
-    branches: [prod, dev]
+    branches: [dev]
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -18,7 +18,7 @@ jobs:
         id: extract_branch
       - uses: actions/checkout@v4
       - name: terraform-apply
-        uses: proxyserver2023/alexandria/github-workflows/terraform-apply@FEAT-1
+        uses: proxyserver2023/alexandria/github-workflows/terraform-apply@dev
         with:
           stage: ${{ steps.extract_branch.outputs.branch }}
           terraform_path: terraform/
