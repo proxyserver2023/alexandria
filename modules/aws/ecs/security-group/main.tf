@@ -32,9 +32,11 @@ resource "aws_security_group" "ecs_sg" {
   description = "Allow traffic from ALB to ECS tasks"
   vpc_id      = var.vpc_id
 
+  # For dynamic port mapping, the ECS task security group allows all traffic from the ALB security group.
+  # For awsvpc mode, only the container port needs to be open.
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 1024
+    to_port         = 65535
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
