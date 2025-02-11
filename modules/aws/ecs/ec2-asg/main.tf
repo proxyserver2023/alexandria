@@ -80,15 +80,15 @@ resource "aws_autoscaling_group" "spot_asg" {
       }
       # Overrides let you specify alternative instance types and their weighted capacities.
       override {
-        instance_type     = "r5.large"
+        instance_type     = "r4.large"
         weighted_capacity = "1"
       }
       override {
-        instance_type     = "m5.xlarge"
-        weighted_capacity = "2" # Each m5.xlarge instance counts as 2 units of capacity
+        instance_type     = "m4.xlarge"
+        weighted_capacity = "2" # Each m4.xlarge instance counts as 2 units of capacity
       }
       override {
-        instance_type     = "c5.large"
+        instance_type     = "c4.large"
         weighted_capacity = "1"
       }
     }
