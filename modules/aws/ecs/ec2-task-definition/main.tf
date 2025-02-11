@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "ec2_task" {
           hostPort      = 0,
           protocol      = "tcp"
         }
-      ]
+      ],
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -29,7 +29,23 @@ resource "aws_ecs_task_definition" "ec2_task" {
           "awslogs-region"        = var.region
           "awslogs-stream-prefix" = "ecs"
         }
-      }
+      },
+      # Non-sensitive environment variables
+      environment = [
+        { name = "APP_MODE", value = "production" },
+        { name = "LOG_LEVEL", value = "info" }
+      ],
+      # Sensitive values pulled securely from SSM Parameter Store or Secrets Manager
+      # secrets = [
+      #   {
+      #     name      = "DB_PASSWORD",
+      #     valueFrom = var.db_password_ssm_parameter_arn   # e.g., arn:aws:ssm:region:account-id:parameter/db_password
+      #   },
+      #   {
+      #     name      = "API_KEY",
+      #     valueFrom = var.api_key_secret_arn               # e.g., arn:aws:secretsmanager:region:account-id:secret:my-api-key
+      #   }
+      # ]
     }
   ])
 }
