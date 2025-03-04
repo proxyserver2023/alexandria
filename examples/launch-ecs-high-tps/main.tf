@@ -62,10 +62,10 @@ module "ec2_asg" {
   ecs_sg_id        = module.security_groups.ecs_sg_id
   instance_profile = module.iam.ecs_instance_profile_name
   ondemand_min     = 0
-  ondemand_max     = 4
+  ondemand_max     = 1
   ondemand_desired = 0
   spot_min         = 0
-  spot_max         = 4
+  spot_max         = 1
   spot_desired     = 1
 }
 
